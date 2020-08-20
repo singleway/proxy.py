@@ -205,6 +205,12 @@ class HttpParser:
                 not self.body_expected() and \
                 raw == b'':
             self.state = httpParserStates.COMPLETE
+            
+        # client请求解析类型 ，且处理完头部之后，且不是CONNECT方法，设置url
+        if self.type == httpParserTypes.REQUEST_PARSER and \
+                self.state == httpParserStates.HEADERS_COMPLETE and \
+                self.method != b'CONNECT':
+            self.set_url(self.header(b'Host')+self.path)
 
         return len(raw) > 0, raw
 
